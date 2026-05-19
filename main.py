@@ -3,30 +3,27 @@ from crewai import Agent, Task, Crew, Process
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+# 1. Inicializa a Ferramenta de Busca (Nome correto para a biblioteca atual)
 search_tool = DuckDuckGoSearchRun()
 
-# Inicializa o Gemini
+# 2. Inicializa o Gemini 3.5 Flash
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.5-flash",
+    model="gemini-1.5-flash", # Mantendo o identificador estável para o SDK
     google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
-
-# Ferramenta de busca gratuita
-search_tool = DuckDuckGoSearchTool()
-
-# 2. AGENTE PESQUISADOR (SDR) - Agora com "Olhos" na internet
+# 3. AGENTE PESQUISADOR (SDR)
 mapeador = Agent(
     role='Especialista em Inteligência de Mercado Norte',
     goal='Localizar distribuidoras reais de {nicho} na região de {localizacao}',
     backstory="""Você é um expert em prospecção no Pará. Sua missão é encontrar nomes, 
     localização e o que essas empresas fazem de fato. Você usa a internet para validar os dados.""",
-    tools=[search_tool], # <--- Aqui ele ganha a visão!
+    tools=[search_tool],
     verbose=True,
     llm=llm
 )
 
-# 3. AGENTE VENDEDOR (COPYWRITER)
+# 4. AGENTE VENDEDOR (COPYWRITER)
 vendedor = Agent(
     role='Especialista em Outreach e Vendas',
     goal='Criar e-mails de parceria para os leads encontrados, focando no nicho de {nicho}',
@@ -36,9 +33,9 @@ vendedor = Agent(
     llm=llm
 )
 
-# 4. TAREFAS
+# 5. TAREFAS
 task_mapear = Task(
-    description="""Pesquise no Google/DuckDuckGo por 5 distribuidoras de {nicho} em {localizacao} e cidades próximas.
+    description="""Pesquise no DuckDuckGo por 5 distribuidoras de {nicho} em {localizacao} e cidades próximas.
     Para cada uma, estime o tamanho (pequena, média, grande) e pegue o diferencial.""",
     agent=mapeador,
     expected_output="Uma lista com Nome, Cidade e Estimativa de Tamanho.",
@@ -52,7 +49,7 @@ task_vender = Task(
     expected_output="Os e-mails prontos para envio."
 )
 
-# 5. A EQUIPE
+# 6. A EQUIPE
 projeto_conecta_ti = Crew(
     agents=[mapeador, vendedor],
     tasks=[task_mapear, task_vender],
@@ -60,9 +57,8 @@ projeto_conecta_ti = Crew(
     verbose=True
 )
 
-# 6. EXECUÇÃO MULTI-NICHO
+# 7. EXECUÇÃO
 if __name__ == "__main__":
-    # Aqui você pode mudar o nicho e a localização para qualquer oportunidade que surgir!
     inputs = {
         'nicho': 'Cosméticos e Estética',
         'localizacao': 'Castanhal e Belém - PA'
