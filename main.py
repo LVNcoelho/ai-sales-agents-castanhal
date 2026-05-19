@@ -1,8 +1,15 @@
 import os
 from crewai import Agent, Task, Crew, Process
-from crewai.tools import DirectoryReadTool, FileReadTool, WebsiteSearchTool
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+search_tool = DuckDuckGoSearchRun()
+
+# Inicializa o Gemini
+llm = ChatGoogleGenerativeAI(
+    model="gemini-3.5-flash",
+    google_api_key=os.getenv("GEMINI_API_KEY")
+)
 
 search_tool = DuckDuckGoSearchRun()
 
