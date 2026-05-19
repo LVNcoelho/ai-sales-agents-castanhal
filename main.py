@@ -20,7 +20,7 @@ mapeador = Agent(
     localização e o que essas empresas fazem de fato. Você usa a internet para validar os dados.""",
     tools=[search_tool], # <--- Aqui ele ganha a visão!
     verbose=True,
-    llm=llm
+    llm="gemini/gemini-1.5-flash"
 )
 
 # 3. AGENTE VENDEDOR (COPYWRITER)
@@ -30,7 +30,7 @@ vendedor = Agent(
     backstory="""Você cria mensagens que respeitam a cultura do Pará e mostram como a 
     Conecta TI pode ajudar essas empresas.""",
     verbose=True,
-    llm=llm
+    llm="gemini/gemini-1.5-flash"
 )
 
 # 4. TAREFAS
