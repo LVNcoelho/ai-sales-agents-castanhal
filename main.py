@@ -3,11 +3,11 @@ from crewai import Agent, Task, Crew, Process
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# 1. Ferramenta de busca
+# 1. Inicializa a ferramenta de busca
 search_tool = DuckDuckGoSearchRun()
 
-# 2. Configuração do Gemini (Garantindo que o CrewAI aceite o formato)
-minha_ia = ChatGoogleGenerativeAI(
+# 2. Configura o Gemini (O segredo está em garantir que ele seja reconhecido)
+llm_gemini = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     google_api_key=os.getenv("GEMINI_API_KEY")
 )
@@ -18,7 +18,7 @@ mapeador = Agent(
     goal='Localizar 5 distribuidoras de {nicho} em {localizacao}',
     backstory='Você é um expert em encontrar empresas no Pará.',
     tools=[search_tool],
-    llm=minha_ia, # Atribuindo diretamente aqui
+    llm=llm_gemini, # Conexão direta corrigida
     verbose=True,
     allow_delegation=False
 )
@@ -28,16 +28,16 @@ vendedor = Agent(
     role='Especialista em Vendas',
     goal='Criar e-mails para as empresas de {nicho} encontradas',
     backstory='Você é um copywriter talentoso da Conecta TI.',
-    llm=minha_ia,
-    verbose=True
+    llm=llm_gemini,
+    verbose=True,
+    allow_delegation=False
 )
 
 # 5. TAREFAS
 task_mapear = Task(
     description='Pesquise distribuidoras de {nicho} em {localizacao}. Pegue nome e cidade.',
     expected_output='Uma lista com 5 empresas reais.',
-    agent=mapeador,
-    tools=[search_tool]
+    agent=mapeador
 )
 
 task_vender = Task(
@@ -55,5 +55,6 @@ projeto = Crew(
 )
 
 if __name__ == "__main__":
-    print("### CONECTA TI INICIANDO... ###")
+    print("\n### CONECTA TI INICIANDO... ###\n")
+    # O kickoff agora usa o dicionário de inputs que os agentes esperam
     projeto.kickoff(inputs={'nicho': 'Cosméticos', 'localizacao': 'Castanhal e Belém - PA'})
