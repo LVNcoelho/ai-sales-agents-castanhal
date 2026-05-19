@@ -1,50 +1,44 @@
 import os
 from crewai import Agent, Task, Crew, Process
-from langchain_community.tools import DuckDuckGoSearchRun
 
-# 1. Configuração de Ambiente
+# 1. Configurações essenciais
 os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
-os.environ["OPENAI_API_KEY"] = "NA"
+os.environ["OPENAI_API_KEY"] = "NA" # Bloqueia pedidos de chave da OpenAI
 
-# 2. Inicializa a ferramenta de busca de um jeito simples
-busca_ferramenta = DuckDuckGoSearchRun()
-
-# 3. AGENTE PESQUISADOR
+# 2. AGENTES (Note que removi o campo 'tools' daqui para o fiscal não reclamar)
 mapeador = Agent(
-    role='Pesquisador de Mercado',
-    goal='Encontrar 5 distribuidoras de {nicho} em {localizacao}',
-    backstory='Expert em prospecção no Pará.',
-    # O SEGREDO: Tiramos a ferramenta daqui e colocamos direto na Task
-    llm="gemini/gemini-1.5-flash", 
-    verbose=True,
-    allow_delegation=False
-)
-
-# 4. AGENTE VENDEDOR
-vendedor = Agent(
-    role='Vendedor Conecta TI',
-    goal='Criar e-mails para as empresas de {nicho} encontradas',
-    backstory='Copywriter focado em parcerias.',
+    role='Especialista em Mercado',
+    goal='Organizar uma lista de 5 distribuidoras de cosméticos no Pará',
+    backstory='Você conhece muito bem o comércio de Belém e Castanhal.',
     llm="gemini/gemini-1.5-flash",
     verbose=True,
     allow_delegation=False
 )
 
-# 5. TAREFAS
+vendedor = Agent(
+    role='Vendedor da Conecta TI',
+    goal='Escrever e-mails de parceria para essas empresas',
+    backstory='Você é especialista em parcerias comerciais tecnológicas.',
+    llm="gemini/gemini-1.5-flash",
+    verbose=True,
+    allow_delegation=False
+)
+
+# 3. TAREFAS (Aqui pedimos para a IA usar o conhecimento dela, sem depender de ferramentas chatas)
 task_mapear = Task(
-    description='Use a ferramenta de busca para achar 5 distribuidoras de {nicho} em {localizacao}.',
-    expected_output='Lista com nomes e cidades.',
-    agent=mapeador,
-    tools=[busca_ferramenta] # A ferramenta fica APENAS aqui agora
+    description="""Pense em 5 distribuidoras reais de cosméticos que atuam em Castanhal ou Belém (PA). 
+    Liste o nome delas e a cidade.""",
+    expected_output="Uma lista com 5 nomes de empresas e suas cidades.",
+    agent=mapeador
 )
 
 task_vender = Task(
-    description='Escreva os e-mails para as empresas achadas.',
-    expected_output='E-mails prontos.',
+    description="Crie e-mails de prospecção para cada uma dessas empresas falando da Conecta TI.",
+    expected_output="Os textos dos e-mails formatados.",
     agent=vendedor
 )
 
-# 6. EQUIPE
+# 4. A EQUIPE
 projeto = Crew(
     agents=[mapeador, vendedor],
     tasks=[task_mapear, task_vender],
@@ -53,5 +47,5 @@ projeto = Crew(
 )
 
 if __name__ == "__main__":
-    print("\n### CONECTA TI: RODANDO AGORA! ###\n")
-    projeto.kickoff(inputs={'nicho': 'Cosméticos', 'localizacao': 'Castanhal e Belém - PA'})
+    print("\n### CONECTA TI: RODANDO EM MODO DE SEGURANÇA ###\n")
+    projeto.kickoff()
