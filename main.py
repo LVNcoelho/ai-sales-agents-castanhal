@@ -1,16 +1,16 @@
 import os
 from crewai import Agent, Task, Crew, Process
 
-# 1. Configurações essenciais
+# 1. Configurações essenciais (A chave vem do terminal)
 os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
-os.environ["OPENAI_API_KEY"] = "NA" # Bloqueia pedidos de chave da OpenAI
+os.environ["OPENAI_API_KEY"] = "NA" 
 
-# 2. AGENTES (Note que removi o campo 'tools' daqui para o fiscal não reclamar)
+# 2. AGENTES (Ajustados para gemini-1.5-flash)
 mapeador = Agent(
     role='Especialista em Mercado',
     goal='Organizar uma lista de 5 distribuidoras de cosméticos no Pará',
     backstory='Você conhece muito bem o comércio de Belém e Castanhal.',
-    llm="gemini/gemini-1.5-flash",
+    llm="gemini/gemini-1.5-flash", # <--- AQUI ESTÁ A MUDANÇA
     verbose=True,
     allow_delegation=False
 )
@@ -18,13 +18,13 @@ mapeador = Agent(
 vendedor = Agent(
     role='Vendedor da Conecta TI',
     goal='Escrever e-mails de parceria para essas empresas',
-    backstory='Você é especialista em parcerias comerciais tecnológicas.',
-    llm="gemini/gemini-1.5-flash",
+    backstory='Você é especialista em parcerias comerciais tecnológicas da Conecta TI.',
+    llm="gemini/gemini-1.5-flash", # <--- E AQUI TAMBÉM
     verbose=True,
     allow_delegation=False
 )
 
-# 3. TAREFAS (Aqui pedimos para a IA usar o conhecimento dela, sem depender de ferramentas chatas)
+# 3. TAREFAS
 task_mapear = Task(
     description="""Pense em 5 distribuidoras reais de cosméticos que atuam em Castanhal ou Belém (PA). 
     Liste o nome delas e a cidade.""",
@@ -33,8 +33,8 @@ task_mapear = Task(
 )
 
 task_vender = Task(
-    description="Crie e-mails de prospecção para cada uma dessas empresas falando da Conecta TI.",
-    expected_output="Os textos dos e-mails formatados.",
+    description="Crie e-mails de prospecção para cada uma dessas empresas encontrados.",
+    expected_output="Os textos dos e-mails formatados para cada uma das 5 empresas.",
     agent=vendedor
 )
 
@@ -47,5 +47,5 @@ projeto = Crew(
 )
 
 if __name__ == "__main__":
-    print("\n### CONECTA TI: RODANDO EM MODO DE SEGURANÇA ###\n")
+    print("\n### CONECTA TI: RODANDO EM MODO DE SEGURANÇA (1.5 FLASH) ###\n")
     projeto.kickoff()
