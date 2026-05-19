@@ -11,13 +11,6 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
-search_tool = DuckDuckGoSearchRun()
-
-# 1. Configuração do Gemini (Grátis via Google AI Studio)
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key=os.getenv("GEMINI_API_KEY")
-)
 
 # Ferramenta de busca gratuita
 search_tool = DuckDuckGoSearchTool()
