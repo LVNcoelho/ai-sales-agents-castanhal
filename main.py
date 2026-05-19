@@ -41,7 +41,8 @@ task_mapear = Task(
     description="""Pesquise no Google/DuckDuckGo por 5 distribuidoras de {nicho} em {localizacao} e cidades próximas.
     Para cada uma, estime o tamanho (pequena, média, grande) e pegue o diferencial.""",
     agent=mapeador,
-    expected_output="Uma lista com Nome, Cidade e Estimativa de Tamanho."
+    expected_output="Uma lista com Nome, Cidade e Estimativa de Tamanho.",
+    tools=[search_tool]
 )
 
 task_vender = Task(
