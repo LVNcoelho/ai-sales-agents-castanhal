@@ -1,36 +1,34 @@
 import os
 from crewai import Agent, Task, Crew, Process
 from langchain_community.tools import DuckDuckGoSearchRun
-from langchain_google_genai import ChatGoogleGenerativeAI
 
-# 1. Configura o LLM de um jeito que o CrewAI não rejeite
-# Usamos o prefixo 'gemini/' que o CrewAI entende nativamente agora
-os.environ["OPENAI_API_KEY"] = "NA" # Truque para o CrewAI não pedir chave da OpenAI
-minha_ia = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    google_api_key=os.getenv("GEMINI_API_KEY")
-)
+# 1. CONFIGURAÇÃO DE AMBIENTE (O SEGREDO PARA NÃO DAR ERRO)
+# O CrewAI busca a chave com este nome exato:
+os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY")
+# Evita que o sistema peça chaves que não estamos usando:
+os.environ["OPENAI_API_KEY"] = "NA"
 
-# 2. Ferramenta de Busca
+# 2. FERRAMENTA DE BUSCA
 busca = DuckDuckGoSearchRun()
 
-# 3. AGENTE PESQUISADOR
+# 3. AGENTE PESQUISADOR (SDR)
 mapeador = Agent(
     role='SDR de Tecnologia',
     goal='Encontrar 5 distribuidoras de {nicho} em {localizacao}',
-    backstory='Você é um especialista em prospecção de mercado no Pará.',
+    backstory='Você é um especialista em prospecção de mercado no Pará, focado em Castanhal e Belém.',
     tools=[busca],
-    llm="gemini/gemini-3.5-flash",
+    # Usando a string direta para evitar erro de validação do Pydantic
+    llm="gemini/gemini-3.5-flash", 
     verbose=True,
     allow_delegation=False,
-    memory=False # Desativando memória para evitar erro de validação
+    memory=False
 )
 
-# 4. AGENTE VENDEDOR
+# 4. AGENTE VENDEDOR (COPYWRITER)
 vendedor = Agent(
     role='Copywriter de Vendas',
     goal='Escrever e-mails de parceria para os leads encontrados',
-    backstory='Você é o braço direito da fundadora da Conecta TI.',
+    backstory='Você é o braço direito da fundadora da Conecta TI, criando mensagens profissionais e culturais.',
     llm="gemini/gemini-3.5-flash",
     verbose=True,
     allow_delegation=False,
@@ -40,17 +38,18 @@ vendedor = Agent(
 # 5. TAREFAS
 task_mapear = Task(
     description='Pesquise distribuidoras de {nicho} em {localizacao}. Liste nome e cidade.',
-    expected_output='Uma lista com o nome de 5 empresas e suas cidades.',
-    agent=mapeador
+    expected_output='Uma lista formatada com o nome de 5 empresas reais e suas cidades.',
+    agent=mapeador,
+    tools=[busca]
 )
 
 task_vender = Task(
-    description='Crie e-mails curtos e profissionais para cada empresa da lista.',
-    expected_output='Os textos dos e-mails formatados.',
+    description='Crie e-mails curtos e profissionais para cada empresa da lista, oferecendo automação da Conecta TI.',
+    expected_output='Os textos dos e-mails prontos para revisão e envio.',
     agent=vendedor
 )
 
-# 6. EQUIPE
+# 6. EQUIPE (A CREW)
 projeto = Crew(
     agents=[mapeador, vendedor],
     tasks=[task_mapear, task_vender],
@@ -59,5 +58,10 @@ projeto = Crew(
 )
 
 if __name__ == "__main__":
-    print("\n### CONECTA TI: INICIANDO OPERAÇÃO ###\n")
-    projeto.kickoff(inputs={'nicho': 'Cosméticos', 'localizacao': 'Castanhal e Belém - PA'})
+    print("\n### CONECTA TI: INICIANDO OPERAÇÃO COM GEMINI 3.5 FLASH ###\n")
+    
+    # Executando a prospecção
+    projeto.kickoff(inputs={
+        'nicho': 'Cosméticos e Estética', 
+        'localizacao': 'Castanhal e Belém - PA'
+    })
