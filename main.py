@@ -3,7 +3,7 @@ from crewai import Agent, Task, Crew, Process
 from crewai_tools import DuckDuckGoSearchTool
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-# 1. Configuração do Gemini (Grátis via Google AI Studio)
+# 1. Configuração do Gemini 
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     google_api_key=os.getenv("GEMINI_API_KEY")
@@ -18,7 +18,7 @@ mapeador = Agent(
     goal='Localizar distribuidoras reais de {nicho} na região de {localizacao}',
     backstory="""Você é um expert em prospecção no Pará. Sua missão é encontrar nomes, 
     localização e o que essas empresas fazem de fato. Você usa a internet para validar os dados.""",
-    tools=[search_tool], # <--- Aqui ele ganha a visão!
+    tools=[search_tool], 
     verbose=True,
     llm="gemini/gemini-1.5-flash"
 )
@@ -58,7 +58,7 @@ projeto_conecta_ti = Crew(
 
 # 6. EXECUÇÃO MULTI-NICHO
 if __name__ == "__main__":
-    # Aqui você pode mudar o nicho e a localização para qualquer oportunidade que surgir!
+    # Aqui pode mudar o nicho e a localização para qualquer oportunidade que surgir!
     inputs = {
         'nicho': 'Cosméticos e Estética',
         'localizacao': 'Castanhal e Belém - PA'
