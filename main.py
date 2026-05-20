@@ -1,7 +1,8 @@
 import os
 from crewai import Agent, Task, Crew, Process
-from crewai_tools import DuckDuckGoSearchTool
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_community.tools import DuckDuckGoSearchRun
+
+search_tool = DuckDuckGoSearchRun()
 
 # 1. Configuração do Gemini 
 llm = ChatGoogleGenerativeAI(
