@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
 # 💡 Correção 1: Importações corretas do LangChain e CrewAI Tools
 from langchain_google_genai import ChatGoogleGenerativeAI
