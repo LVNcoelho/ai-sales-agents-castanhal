@@ -55,7 +55,7 @@ task_mapear = Task(
    # soluções de automação comercial e funcionários digitais da Conecta TI.""",
    # agent=vendedor,
    # expected_output="Os e-mails personalizados prontos para envio, separados por empresa."
-)
+#)
 
 # 5. A EQUIPE
 projeto_conecta_ti = Crew(
