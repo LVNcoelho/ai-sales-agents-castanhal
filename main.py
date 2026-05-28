@@ -1,16 +1,19 @@
 import os
 from crewai import Agent, Task, Crew, Process
-from langchain_community.tools import DuckDuckGoSearchRun
+# 💡 Correção 1: Importações corretas do LangChain e CrewAI Tools
+from langchain_google_genai import ChatGoogleGenerativeAI
+from crewai_tools import DuckDuckGoSearchTool
 
-search_tool = DuckDuckGoSearchRun()
+# Configura a chave de ambiente global para o CrewAI e o Gemini
+os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY", "")
 
 # 1. Configuração do Gemini 
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
-    google_api_key=os.getenv("GEMINI_API_KEY")
+    temperature=0.3, # Abaixamos a temperatura para dados mais exatos na busca
 )
 
-# Ferramenta de busca gratuita
+# 💡 Correção 2: Instanciação única da ferramenta de busca oficial do CrewAI
 search_tool = DuckDuckGoSearchTool()
 
 # 2. AGENTE PESQUISADOR (SDR) - Agora com "Olhos" na internet
@@ -21,7 +24,8 @@ mapeador = Agent(
     localização e o que essas empresas fazem de fato. Você usa a internet para validar os dados.""",
     tools=[search_tool], 
     verbose=True,
-    llm="gemini/gemini-1.5-flash"
+    allow_delegation=False,
+    llm=llm # 💡 Correção 3: Passando o objeto LLM correto configurado acima
 )
 
 # 3. AGENTE VENDEDOR (COPYWRITER)
@@ -29,24 +33,27 @@ vendedor = Agent(
     role='Especialista em Outreach e Vendas',
     goal='Criar e-mails de parceria para os leads encontrados, focando no nicho de {nicho}',
     backstory="""Você cria mensagens que respeitam a cultura do Pará e mostram como a 
-    Conecta TI pode ajudar essas empresas.""",
+    Conecta TI pode ajudar essas empresas com automação e inteligência.""",
     verbose=True,
-    llm="gemini/gemini-1.5-flash"
+    allow_delegation=False,
+    llm=llm # 💡 Correção 3: Passando o objeto LLM correto configurado acima
 )
 
 # 4. TAREFAS
 task_mapear = Task(
-    description="""Pesquise no Google/DuckDuckGo por 5 distribuidoras de {nicho} em {localizacao} e cidades próximas.
-    Para cada uma, estime o tamanho (pequena, média, grande) e pegue o diferencial.""",
+    description="""Pesquise usando a ferramenta de busca por 10 distribuidoras reais de {nicho} em {localizacao} e cidades próximas.
+    Para cada uma, identifique o Nome, a Cidade, estime o tamanho (pequena, média, grande) e capture o principal diferencial deles.""",
     agent=mapeador,
-    expected_output="Uma lista com Nome, Cidade e Estimativa de Tamanho."
+    expected_output="Uma lista estruturada contendo: Nome da Empresa, Cidade, Estimativa de Tamanho e Diferencial Comercial."
 )
 
-task_vender = Task(
-    description="""Crie um e-mail personalizado para cada empresa da lista, 
-    destacando que temos soluções de automação e produtos para o setor de {nicho}.""",
-    agent=vendedor,
-    expected_output="Os e-mails prontos para envio."
+#task_vender = Task(
+   # description="""Com base EXCLUSIVAMENTE na lista de empresas reais gerada pela tarefa anterior, 
+   # crie um e-mail de outreach personalizado para cada uma delas. O e-mail deve saudar o cliente respeitando 
+   # o tom de negócios do Pará, citar o diferencial que encontramos dele para gerar conexão, e oferecer as 
+   # soluções de automação comercial e funcionários digitais da Conecta TI.""",
+   # agent=vendedor,
+   # expected_output="Os e-mails personalizados prontos para envio, separados por empresa."
 )
 
 # 5. A EQUIPE
@@ -59,13 +66,12 @@ projeto_conecta_ti = Crew(
 
 # 6. EXECUÇÃO MULTI-NICHO
 if __name__ == "__main__":
-    # Aqui pode mudar o nicho e a localização para qualquer oportunidade que surgir!
     inputs = {
         'nicho': 'Cosméticos e Estética',
         'localizacao': 'Castanhal e Belém - PA'
     }
 
-    print(f"### Iniciando Prospecção para: {inputs['nicho']} ###")
+    print(f"\n### 🚀 Iniciando Prospecção Conecta TI para: {inputs['nicho']} ###\n")
     resultado = projeto_conecta_ti.kickoff(inputs=inputs)
     print("\n\n########################")
     print("## RESULTADO DA PROSPECÇÃO ##")
