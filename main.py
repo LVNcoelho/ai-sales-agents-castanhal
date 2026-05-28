@@ -57,10 +57,10 @@ task_mapear = Task(
    # expected_output="Os e-mails personalizados prontos para envio, separados por empresa."
 #)
 
-# 5. A EQUIPE
+# 5. A EQUIPE (Agora só com o Mapeador)
 projeto_conecta_ti = Crew(
-    agents=[mapeador, vendedor],
-    tasks=[task_mapear, task_vender],
+    agents=[mapeador],           
+    tasks=[task_mapear],         
     process=Process.sequential,
     verbose=True
 )
