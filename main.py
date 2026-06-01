@@ -4,45 +4,54 @@ from crewai import Agent, Task, Crew, Process
 from langchain_google_genai import ChatGoogleGenerativeAI
 from crewai_tools import DuckDuckGoSearchTool
 
-# Configura a chave de ambiente
-# Certifique-se de que a variável GEMINI_API_KEY esteja no seu ambiente
-os.environ["GEMINI_API_KEY"] = os.getenv("GEMINI_API_KEY", "")
-
-# 1. Configuração do Gemini 
+# 1. Configuração do Gemini
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     temperature=0.3,
 )
 
+# 2. Ferramenta de Busca
 search_tool = DuckDuckGoSearchTool()
 
-# 2. AGENTE PESQUISADOR (Focado em Escolas e Alunos)
+# 3. AGENTE PESQUISADOR (SDR) - Com filtros negativos rigorosos
 mapeador = Agent(
-    role='Especialista em Inteligência Educacional',
-    goal='Identificar potenciais alunos e parceiros para curso de informática em {localizacao}',
-    backstory="""Você é um expert em encontrar leads quentes em cidades pequenas. 
-    Sua missão é localizar jovens, comércios e grupos locais em Curuçá que precisam 
-    urgentemente de qualificação em informática para emprego e gestão.""",
+    role='Analista de Inteligência de Mercado para PMEs',
+    goal='Localizar PMEs brasileiras em crescimento que necessitam de automação comercial',
+    backstory="""Você é um especialista em encontrar empresas de bairro, lojas familiares e 
+    serviços locais (clínicas, petshops, moda) que estão em crescimento. 
+    Sua prioridade absoluta é identificar empresas com presença profissional no Instagram ou 
+    Google Maps, mas que operam de forma manual. 
+    
+    FILTROS RÍGIDOS E PROIBIÇÕES: 
+    - Priorize estritamente lojas de bairro, empresas familiares e negócios locais.
+    - É estritamente PROIBIDO listar grandes redes, franquias famosas, multinacionais ou startups.
+    - EXCLUA RIGOROSAMENTE marcas como: Magazine Luiza, Renner, CVC, Casas Bahia, Riachuelo, 
+      Petz, Cobasi, Cacau Show, ou qualquer rede de âmbito nacional.
+    - Busque por empresas que precisam automatizar o atendimento para escalar.""",
     tools=[search_tool], 
     verbose=True,
     allow_delegation=False,
     llm=llm
 )
 
-# 3. TAREFA: Mapear Leads (Alunos e Parceiros)
+# 4. TAREFA - Otimizada
 task_mapear = Task(
-    description="""Pesquise ativamente na internet e redes sociais por:
-    1. Grupos de vagas de emprego ou oportunidades em Curuçá-PA.
-    2. Comerciantes locais que buscam profissionais qualificados.
-    3. Perfis ou comunidades onde jovens discutem primeiro emprego ou cursos.
+    description="""Pesquise 10 PMEs do nicho de {nicho} em todo o {localizacao}.
+    FOCO: Empresas com presença ativa no Instagram ou Google Maps.
     
-    PARA CADA LEAD IDENTIFICADO, gere: Nome do Lead/Grupo, Fonte (onde foi achado), 
-    e um 'Sinal de Necessidade' (por que ele precisa de curso de informática agora).""",
+    CRITÉRIOS DE SELEÇÃO: 
+    1. Empresas de bairro ou familiares com crescimento aparente.
+    2. Sinais de crescimento: posts recentes, muitos comentários, novas unidades, promoções.
+    
+    EXCLUA: Startups, grandes redes de franquias, bancos ou indústrias.
+    
+    Para cada empresa, identifique: Nome, Cidade, Link (Instagram ou Site) e o 'Sinal de Crescimento' 
+    que justifica o contato da Conecta TI.""",
     agent=mapeador,
-    expected_output="Uma lista estruturada contendo: Nome do Lead/Grupo, Fonte da busca, Sinal de Necessidade e Script de abordagem sugerido."
+    expected_output="Uma lista estruturada contendo: Nome da Empresa, Cidade, Link, Sinal de Crescimento e Por que precisa de automação."
 )
 
-# 4. A EQUIPE
+# 5. A EQUIPE
 projeto_conecta_ti = Crew(
     agents=[mapeador],           
     tasks=[task_mapear],         
@@ -50,14 +59,14 @@ projeto_conecta_ti = Crew(
     verbose=True
 )
 
-# 5. EXECUÇÃO FOCO: CURUÇÁ
+# 6. EXECUÇÃO
 if __name__ == "__main__":
     inputs = {
-        'nicho': 'Cursos de Informática Básica e Profissionalizante',
-        'localizacao': 'Curuçá - Pará'
+        'nicho': 'Clínicas de Estética, Petshops e Varejo de Moda',
+        'localizacao': 'Brasil'
     }
 
-    print(f"\n### 🚀 Iniciando Prospecção Conecta TI para: {inputs['nicho']} em {inputs['localizacao']} ###\n")
+    print(f"\n### 🚀 Iniciando Prospecção Conecta TI para: {inputs['nicho']} ###\n")
     resultado = projeto_conecta_ti.kickoff(inputs=inputs)
     print("\n\n########################")
     print("## RESULTADO DA PROSPECÇÃO ##")
