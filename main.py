@@ -10,7 +10,6 @@ load_dotenv()
 # O CrewAI e o Google mudaram a forma de ler a chave. 
 # Garantimos que ela esteja configurada onde os dois procuram:
 if "GEMINI_API_KEY" not in os.environ:
-    # Se você esqueceu de criar o .env, ele tenta pegar o antigo GOOGLE_API_KEY
     os.environ["GEMINI_API_KEY"] = os.getenv("GOOGLE_API_KEY", "")
 
 # 1. Configuração do Gemini (Modelo atualizado e estável)
@@ -60,12 +59,14 @@ task_mapear = Task(
     expected_output="Uma lista estruturada contendo: Nome da Empresa, Cidade, Link, Sinal de Crescimento e Por que precisa de automação.",
 )
 
-# 5. A EQUIPE
+# 5. A EQUIPE (Ajustada com o LLM padrão para a equipe toda)
 projeto_conecta_ti = Crew(
     agents=[mapeador],           
     tasks=[task_mapear],         
     process=Process.sequential,
-    verbose=True
+    verbose=True,
+    memory=False,                  # Desativado para carregar mais rápido no Codespaces
+    config={"function_calling_llm": llm} # Garante que as ferramentas usem o Gemini
 )
 
 # 6. EXECUÇÃO
@@ -84,4 +85,4 @@ if __name__ == "__main__":
         print(resultado)
     except Exception as e:
         print(f"\n❌ Ocorreu um erro na execução: {e}")
-       
+        
