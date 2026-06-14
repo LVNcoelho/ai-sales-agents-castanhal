@@ -4,7 +4,16 @@ from crewai import Agent, Task, Crew, Process
 from langchain_google_genai import ChatGoogleGenerativeAI
 from crewai_tools import DuckDuckGoSearchTool
 
-# 1. Configuração do Gemini
+# Carrega as variáveis de ambiente do arquivo .env
+load_dotenv()
+
+# O CrewAI e o Google mudaram a forma de ler a chave. 
+# Garantimos que ela esteja configurada onde os dois procuram:
+if "GEMINI_API_KEY" not in os.environ:
+    # Se você esqueceu de criar o .env, ele tenta pegar o antigo GOOGLE_API_KEY
+    os.environ["GEMINI_API_KEY"] = os.getenv("GOOGLE_API_KEY", "")
+
+# 1. Configuração do Gemini (Modelo atualizado e estável)
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     temperature=0.3,
@@ -48,7 +57,7 @@ task_mapear = Task(
     Para cada empresa, identifique: Nome, Cidade, Link (Instagram ou Site) e o 'Sinal de Crescimento' 
     que justifica o contato da Conecta TI.""",
     agent=mapeador,
-    expected_output="Uma lista estruturada contendo: Nome da Empresa, Cidade, Link, Sinal de Crescimento e Por que precisa de automação."
+    expected_output="Uma lista estruturada contendo: Nome da Empresa, Cidade, Link, Sinal de Crescimento e Por que precisa de automação.",
 )
 
 # 5. A EQUIPE
@@ -67,7 +76,12 @@ if __name__ == "__main__":
     }
 
     print(f"\n### 🚀 Iniciando Prospecção Conecta TI para: {inputs['nicho']} ###\n")
-    resultado = projeto_conecta_ti.kickoff(inputs=inputs)
-    print("\n\n########################")
-    print("## RESULTADO DA PROSPECÇÃO ##")
-    print(resultado)
+    
+    try:
+        resultado = projeto_conecta_ti.kickoff(inputs=inputs)
+        print("\n\n########################")
+        print("## RESULTADO DA PROSPECÇÃO ##")
+        print(resultado)
+    except Exception as e:
+        print(f"\n❌ Ocorreu um erro na execução: {e}")
+       
