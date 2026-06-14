@@ -2,26 +2,29 @@ import os
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process
 from langchain_google_genai import ChatGoogleGenerativeAI
-from crewai_tools import DuckDuckGoSearchTool
+from langchain_community.tools import DuckDuckGoSearchRun
+from crewai.tools import tool 
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# O CrewAI e o Google mudaram a forma de ler a chave. 
-# Garantimos que ela esteja configurada onde os dois procuram:
 if "GEMINI_API_KEY" not in os.environ:
     os.environ["GEMINI_API_KEY"] = os.getenv("GOOGLE_API_KEY", "")
 
-# 1. Configuração do Gemini (Modelo atualizado e estável)
+# 1. Configuração do Gemini
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     temperature=0.3,
 )
 
 # 2. Ferramenta de Busca
-search_tool = DuckDuckGoSearchTool()
+@tool("Ferramenta de Busca Web")
+def web_search(search_query: str) -> str:
+    """Utilize esta ferramenta para buscar informações sobre empresas e negócios locais na internet."""
+    search = DuckDuckGoSearchRun()
+    return search.run(search_query)
 
-# 3. AGENTE PESQUISADOR (SDR) - Com filtros negativos rigorosos
+# 3. AGENTE PESQUISADOR (SDR)
 mapeador = Agent(
     role='Analista de Inteligência de Mercado para PMEs',
     goal='Localizar PMEs brasileiras em crescimento que necessitam de automação comercial',
@@ -36,13 +39,13 @@ mapeador = Agent(
     - EXCLUA RIGOROSAMENTE marcas como: Magazine Luiza, Renner, CVC, Casas Bahia, Riachuelo, 
       Petz, Cobasi, Cacau Show, ou qualquer rede de âmbito nacional.
     - Busque por empresas que precisam automatizar o atendimento para escalar.""",
-    tools=[search_tool], 
+    tools=[web_search], 
     verbose=True,
     allow_delegation=False,
     llm=llm
 )
 
-# 4. TAREFA - Otimizada
+# 4. TAREFA
 task_mapear = Task(
     description="""Pesquise 10 PMEs do nicho de {nicho} em todo o {localizacao}.
     FOCO: Empresas com presença ativa no Instagram ou Google Maps.
@@ -59,14 +62,12 @@ task_mapear = Task(
     expected_output="Uma lista estruturada contendo: Nome da Empresa, Cidade, Link, Sinal de Crescimento e Por que precisa de automação.",
 )
 
-# 5. A EQUIPE (Ajustada com o LLM padrão para a equipe toda)
+# 5. A EQUIPE (Corrigida: sem o argumento 'config' que gerou o erro de validação)
 projeto_conecta_ti = Crew(
     agents=[mapeador],           
     tasks=[task_mapear],         
     process=Process.sequential,
-    verbose=True,
-    memory=False,                  # Desativado para carregar mais rápido no Codespaces
-    config={"function_calling_llm": llm} # Garante que as ferramentas usem o Gemini
+    verbose=True
 )
 
 # 6. EXECUÇÃO
@@ -85,4 +86,3 @@ if __name__ == "__main__":
         print(resultado)
     except Exception as e:
         print(f"\n❌ Ocorreu um erro na execução: {e}")
-        
