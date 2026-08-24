@@ -28,6 +28,8 @@ graph TD
     C -->|Mapeamento de Dores| D["✍️ Sales Copywriter Agent"]
     D -->|Geração do Cold Mail/Pitch| E["🚀 Saída: Cadência B2B Pronta"]
     
+
+    
     📋 Cenário e Desafio
 A empresa possuía um processo de prospecção 100% manual, lento e dependente de abordagens genéricas por WhatsApp. O desafio era identificar distribuidoras e lojas em polos estratégicos (como Belém, Capanema, Paragominas e Castanhal) e realizar abordagens hiper-personalizadas em escala.
 
