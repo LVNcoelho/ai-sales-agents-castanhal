@@ -1,26 +1,33 @@
-
 # 🤖 ai-sales-agents-castanhal
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
 ![CrewAI](https://img.shields.io/badge/CrewAI-Orchestration-orange?style=for-the-badge)
 ![LangChain](https://img.shields.io/badge/LangChain-Framework-green?style=for-the-badge)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-blueviolet?style=for-the-badge&logo=openai)
+![License](https://img.shields.io/badge/License-MIT-brightgreen?style=for-the-badge)
 
-Meu primeiro projeto explorando como a inteligência artificial pode sobrecarregar positivamente o setor comercial de pequenas e médias empresas regionais.
-
-Este projeto utiliza **Multi-Agent Systems (CrewAI)** para automatizar todo o pipeline de prospecção e vendas B2B para empresas distribuidoras e comércios no polo de Castanhal - Pará e região (cobrindo um raio de atuação de até 300 km).
+> Automação inteligente de prospecção B2B e geração de abordagens hiper-personalizadas focada no polo comercial de Castanhal e região.
 
 ---
 
-## 📐 Fluxo de Funcionamento (Arquitetura dos Agentes)
+## 📌 Sobre o Projeto
+
+Este projeto utiliza **Sistemas Multi-Agentes (CrewAI)** para automatizar todo o pipeline de prospecção e vendas B2B para distribuidoras, indústrias e comércios no polo econômico de **Castanhal - Pará** e cidades num raio de até 300 km (Belém, Capanema, Paragominas, Abaetetuba, entre outras).
+
+### 📋 Cenário e Desafio
+Empresas locais costumam utilizar um processo de prospecção 100% manual, lento e dependente de abordagens genéricas ("frias") via WhatsApp ou e-mail. O desafio deste software é identificar alvos comerciais estratégicos e gerar mensagens de alta conversão, contextualizadas com a realidade do mercado paraense.
+
+---
+
+## 📐 Arquitetura do Sistema
 
 ```mermaid
 graph TD
-    A["Entrada: Regiao e Nicho Target"] --> B["SDR Agent"]
-    B -->|Mineracao e Qualificacao| C["Analise de Dores"]
-    C --> D["Sales Copywriter Agent"]
-    D -->|Geracao de E-mail| E["Cadencia de Abordagem B2B"]
-
+    A["Entrada: Região e Nicho Target"] --> B["🔍 SDR Agent"]
+    B -->|Mineração e Qualificação| C{"Análise de Gargalos"}
+    C -->|Mapeamento de Dores| D["✍️ Sales Copywriter Agent"]
+    D -->|Geração do Cold Mail/Pitch| E["🚀 Saída: Cadência B2B Pronta"]
+    
     📋 Cenário e Desafio
 A empresa possuía um processo de prospecção 100% manual, lento e dependente de abordagens genéricas por WhatsApp. O desafio era identificar distribuidoras e lojas em polos estratégicos (como Belém, Capanema, Paragominas e Castanhal) e realizar abordagens hiper-personalizadas em escala.
 
