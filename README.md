@@ -14,8 +14,6 @@
 
 Este projeto utiliza **Sistemas Multi-Agentes (CrewAI)** para automatizar todo o pipeline de prospecção e vendas B2B para distribuidoras, indústrias e comércios no polo econômico de **Castanhal - Pará** e cidades num raio de até 300 km (Belém, Capanema, Paragominas, Abaetetuba, entre outras).
 
-### 📋 Cenário e Desafio
-Empresas locais costumam utilizar um processo de prospecção 100% manual, lento e dependente de abordagens genéricas ("frias") via WhatsApp ou e-mail. O desafio deste software é identificar alvos comerciais estratégicos e gerar mensagens de alta conversão, contextualizadas com a realidade do mercado paraense.
 
 ---
 
