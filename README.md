@@ -1,3 +1,4 @@
+
 # 🤖 ai-sales-agents-castanhal
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
@@ -15,10 +16,10 @@ Este projeto utiliza **Multi-Agent Systems (CrewAI)** para automatizar todo o pi
 
 ```mermaid
 graph TD
-    A["📍 Entrada: Região e Nicho Target"] --> B["🔍 SDR Agent"]
-    B -->|Mineração e Qualificação| C["🧠 Análise de Dores"]
-    C --> D["✍️ Sales Copywriter Agent"]
-    D -->|Geração de E-mail| E["📩 Cadência de Abordagem B2B"]
+    A["Entrada: Regiao e Nicho Target"] --> B["SDR Agent"]
+    B -->|Mineracao e Qualificacao| C["Analise de Dores"]
+    C --> D["Sales Copywriter Agent"]
+    D -->|Geracao de E-mail| E["Cadencia de Abordagem B2B"]
 
     📋 Cenário e Desafio
 A empresa possuía um processo de prospecção 100% manual, lento e dependente de abordagens genéricas por WhatsApp. O desafio era identificar distribuidoras e lojas em polos estratégicos (como Belém, Capanema, Paragominas e Castanhal) e realizar abordagens hiper-personalizadas em escala.
