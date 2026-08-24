@@ -15,10 +15,10 @@ Este projeto utiliza **Multi-Agent Systems (CrewAI)** para automatizar todo o pi
 
 ```mermaid
 graph TD
-    A[📍 Entrada: Região & Nicho Target] --> B[🔍 SDR Agent]
-    B -->|Mineração e Qualificação de Leads| C[🧠 Análise de Gargalos & Dores]
-    C --> D[✍️ Sales Copywriter Agent]
-    D -->|Geração de E-mail Personalizado| E[📩 Cadência de Abordagem B2B]
+    A["📍 Entrada: Região e Nicho Target"] --> B["🔍 SDR Agent"]
+    B -->|Mineração e Qualificação| C["🧠 Análise de Dores"]
+    C --> D["✍️ Sales Copywriter Agent"]
+    D -->|Geração de E-mail| E["📩 Cadência de Abordagem B2B"]
 
     📋 Cenário e Desafio
 A empresa possuía um processo de prospecção 100% manual, lento e dependente de abordagens genéricas por WhatsApp. O desafio era identificar distribuidoras e lojas em polos estratégicos (como Belém, Capanema, Paragominas e Castanhal) e realizar abordagens hiper-personalizadas em escala.
